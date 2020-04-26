@@ -4,7 +4,7 @@
     <TargetFramework>net48</TargetFramework>
     <RootNamespace>Be.Stateless.BizTalk</RootNamespace>
     <AssemblyTitle>Be.Stateless.BizTalk.Build.Tasks</AssemblyTitle>
-    <Description>Extension methods for general purpose .NET development.</Description>
+    <Description>BizTalk Factory's MSBuild tasks for general purpose BizTalk Server development.</Description>
   </PropertyGroup>
 
   <PropertyGroup>

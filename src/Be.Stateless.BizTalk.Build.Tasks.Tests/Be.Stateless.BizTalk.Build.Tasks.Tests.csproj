@@ -4,7 +4,7 @@
     <TargetFramework>net48</TargetFramework>
     <RootNamespace>Be.Stateless.BizTalk</RootNamespace>
     <AssemblyTitle>Be.Stateless.BizTalk.Build.Tasks.Tests</AssemblyTitle>
-    <Description>Unit testing of extension methods for general purpose .NET development.</Description>
+    <Description>Unit tests for BizTalk Factory's MSBuild tasks for general purpose BizTalk Server development.</Description>
   </PropertyGroup>
 
   <ItemGroup>
