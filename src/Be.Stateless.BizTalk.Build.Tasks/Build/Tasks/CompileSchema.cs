@@ -28,7 +28,9 @@ using Microsoft.VisualStudio.BizTalkProject.BuildTasks;
 
 namespace Be.Stateless.BizTalk.Build.Tasks
 {
-	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+	[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "MSBuild Task.")]
+	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "MSBuild Task.")]
+	[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "MSBuild Task.")]
 	public class CompileSchema : BizTalkBaseTask
 	{
 		#region Nested Type: SchemaBuildSnapshot

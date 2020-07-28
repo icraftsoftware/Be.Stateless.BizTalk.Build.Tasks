@@ -26,4 +26,5 @@
 	<s:Double x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=FileAD76E8C2C25CED47A6FA160551990498/RelativePriority/@EntryValue">4</s:Double>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Chabot/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Fran_00E7ois/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Unregister/@EntryIndexedValue">True</s:Boolean>
 </wpf:ResourceDictionary>
