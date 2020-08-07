@@ -33,7 +33,6 @@ namespace Be.Stateless.BizTalk.Build
 		[SuppressMessage("ReSharper", "CommentTypo")]
 		static BizTalkAssemblyResolver()
 		{
-			// [HKLM\SOFTWARE\Microsoft\BizTalk Server\3.0]
 			const string subKey = @"SOFTWARE\Microsoft\BizTalk Server\3.0";
 			using (var baseKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32))
 			using (var btsKey = baseKey.OpenSubKey(subKey) ?? throw new InvalidOperationException($"Cannot find registry key '{baseKey.Name}\\{subKey}'."))
@@ -50,7 +49,6 @@ namespace Be.Stateless.BizTalk.Build
 
 		public static void Register(Action<string> log, params string[] probingPaths)
 		{
-			// TODO use log4net instead, but should work with both InstallUtil and MSBuild
 			_instance._log = log;
 			AddProbingPaths(probingPaths ?? Array.Empty<string>());
 			AppDomain.CurrentDomain.AssemblyResolve += _instance.OnAssemblyResolve;
