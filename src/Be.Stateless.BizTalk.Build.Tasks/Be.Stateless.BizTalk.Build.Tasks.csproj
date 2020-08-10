@@ -41,7 +41,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.20219.28872" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.20223.20679" />
+    <PackageReference Include="Be.Stateless.Extensions" Version="2.0.20196.40210" />
     <PackageReference Include="Microsoft.Build" Version="16.6.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Build.Framework" Version="16.6.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="16.6.0" PrivateAssets="All" />

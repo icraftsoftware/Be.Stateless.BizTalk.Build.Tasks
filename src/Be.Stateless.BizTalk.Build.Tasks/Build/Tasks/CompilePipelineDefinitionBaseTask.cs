@@ -17,12 +17,10 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using Be.Stateless.BizTalk.Dsl.Pipeline;
+using Be.Stateless.BizTalk.Dsl.Pipeline.Extensions;
 using Be.Stateless.Extensions;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Framework;
@@ -46,17 +44,10 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 		[Required]
 		public string RootPath { get; set; }
 
-		protected IEnumerable<Type> PipelineDefinitions => PipelineDefinitionAssemblies
-			.Select(ra => ra.GetMetadata("Identity"))
-			.Select(Assembly.LoadFrom)
-			// make sure all assemblies are loaded before proceeding with reflection
-			.ToArray()
-			// discard Be.Stateless.BizTalk.Dsl.Pipeline assembly
-			.Where(a => a != typeof(ReceivePipeline).Assembly)
-			.SelectMany(a => a.GetTypes())
-			.Where(t => !t.IsAbstract && !t.IsGenericTypeDefinition)
-			.Where(t => typeof(ReceivePipeline).IsAssignableFrom(t) || typeof(SendPipeline).IsAssignableFrom(t))
-			.ToArray();
+		[SuppressMessage("ReSharper", "ReturnTypeCanBeEnumerable.Global")]
+		protected Type[] PipelineDefinitions => PipelineDefinitionAssemblies
+			.Select(pda => pda.GetMetadata("Identity"))
+			.GetPipelineDefinitionTypes();
 
 		protected string[] ReferencedPaths => ReferencedAssemblies
 			.Select(ra => ra.GetMetadata("Identity"))
