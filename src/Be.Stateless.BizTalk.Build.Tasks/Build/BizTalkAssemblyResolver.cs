@@ -35,14 +35,21 @@ namespace Be.Stateless.BizTalk.Build
 		{
 			const string subKey = @"SOFTWARE\Microsoft\BizTalk Server\3.0";
 			using (var baseKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32))
-			using (var btsKey = baseKey.OpenSubKey(subKey) ?? throw new InvalidOperationException($"Cannot find registry key '{baseKey.Name}\\{subKey}'."))
+			using (var btsKey = baseKey.OpenSubKey(subKey))
 			{
-				var installPath = (string) btsKey.GetValue("InstallPath");
-				_defaultProbingPaths = new[] {
-					installPath,
-					Path.Combine(installPath, @"Developer Tools"),
-					Path.Combine(installPath, @"SDK\Utilities\PipelineTools")
-				};
+				if (btsKey == null)
+				{
+					_defaultProbingPaths = Array.Empty<string>();
+				}
+				else
+				{
+					var installPath = (string) btsKey.GetValue("InstallPath");
+					_defaultProbingPaths = new[] {
+						installPath,
+						Path.Combine(installPath, @"Developer Tools"),
+						Path.Combine(installPath, @"SDK\Utilities\PipelineTools")
+					};
+				}
 			}
 			_instance = new BizTalkAssemblyResolver();
 		}
@@ -50,6 +57,7 @@ namespace Be.Stateless.BizTalk.Build
 		public static void Register(Action<string> log, params string[] probingPaths)
 		{
 			_instance._log = log;
+			if (!_defaultProbingPaths.Any()) log("Default probing paths to BizTalk Developer Tools and Pipeline Tools could not be found.");
 			AddProbingPaths(probingPaths ?? Array.Empty<string>());
 			AppDomain.CurrentDomain.AssemblyResolve += _instance.OnAssemblyResolve;
 		}
