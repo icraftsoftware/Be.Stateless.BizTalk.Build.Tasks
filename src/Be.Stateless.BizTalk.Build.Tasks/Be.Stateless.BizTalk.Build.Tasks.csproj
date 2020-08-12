@@ -40,11 +40,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.20223.20679" />
-    <PackageReference Include="Be.Stateless.Extensions" Version="2.0.20196.40210" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.20225.26000" />
+    <PackageReference Include="Be.Stateless.Extensions" Version="2.0.20224.33378" />
     <PackageReference Include="Microsoft.Build" Version="16.6.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Build.Framework" Version="16.6.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="16.6.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 

@@ -32,9 +32,11 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Implements Msbuild Task API.")]
 	public abstract class CompilePipelineDefinitionBaseTask : Task
 	{
+		[SuppressMessage("Performance", "CA1819:Properties should not return arrays")]
 		[Required]
 		public ITaskItem[] PipelineDefinitionAssemblies { get; set; }
 
+		[SuppressMessage("Performance", "CA1819:Properties should not return arrays")]
 		[Required]
 		public ITaskItem[] ReferencedAssemblies { get; set; }
 
@@ -44,11 +46,13 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 		[Required]
 		public string RootPath { get; set; }
 
+		[SuppressMessage("Performance", "CA1819:Properties should not return arrays")]
 		[SuppressMessage("ReSharper", "ReturnTypeCanBeEnumerable.Global")]
 		protected Type[] PipelineDefinitions => PipelineDefinitionAssemblies
 			.Select(pda => pda.GetMetadata("Identity"))
 			.GetPipelineDefinitionTypes();
 
+		[SuppressMessage("Performance", "CA1819:Properties should not return arrays")]
 		protected string[] ReferencedPaths => ReferencedAssemblies
 			.Select(ra => ra.GetMetadata("Identity"))
 			.Select(Path.GetDirectoryName)
@@ -57,9 +61,10 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 		[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
 		protected string ComputePipelineOutputDirectory(Type pipelineType)
 		{
+			if (pipelineType == null) throw new ArgumentNullException(nameof(pipelineType));
 			var projectDirectory = RootPath ?? Directory.GetCurrentDirectory();
 			var projectRootNamespace = RootNamespace ?? new Project(BuildEngine.ProjectFileOfTaskNode).AllEvaluatedProperties.Single(p => p.Name == "RootNamespace").EvaluatedValue;
-			var relativePath = !pipelineType.Namespace.IsNullOrWhiteSpace() && pipelineType.Namespace.StartsWith(projectRootNamespace + ".")
+			var relativePath = !pipelineType.Namespace.IsNullOrWhiteSpace() && pipelineType.Namespace.StartsWith(projectRootNamespace + ".", StringComparison.OrdinalIgnoreCase)
 				? pipelineType.Namespace.Substring(projectRootNamespace.Length + 1)
 				: "Pipelines";
 			return Path.Combine(projectDirectory, relativePath);

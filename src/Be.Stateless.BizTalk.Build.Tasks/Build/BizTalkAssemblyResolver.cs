@@ -30,6 +30,7 @@ namespace Be.Stateless.BizTalk.Build
 {
 	internal class BizTalkAssemblyResolver
 	{
+		[SuppressMessage("Performance", "CA1810:Initialize reference type static fields inline")]
 		[SuppressMessage("ReSharper", "CommentTypo")]
 		static BizTalkAssemblyResolver()
 		{
@@ -80,9 +81,9 @@ namespace Be.Stateless.BizTalk.Build
 		private Assembly OnAssemblyResolve(object sender, ResolveEventArgs args)
 		{
 			// nonexistent resource assemblies
-			if (args.Name.StartsWith("Microsoft.BizTalk.ExplorerOM.resources, Version=3.0.")) return null;
-			if (args.Name.StartsWith("Microsoft.BizTalk.Pipeline.Components.resources, Version=3.0.")) return null;
-			if (args.Name.StartsWith("Microsoft.ServiceModel.Channels.resources, Version=3.0.")) return null;
+			if (args.Name.StartsWith("Microsoft.BizTalk.ExplorerOM.resources, Version=3.0.", StringComparison.OrdinalIgnoreCase)) return null;
+			if (args.Name.StartsWith("Microsoft.BizTalk.Pipeline.Components.resources, Version=3.0.", StringComparison.OrdinalIgnoreCase)) return null;
+			if (args.Name.StartsWith("Microsoft.ServiceModel.Channels.resources, Version=3.0.", StringComparison.OrdinalIgnoreCase)) return null;
 
 			// nonexistent xml serializers
 			if (Regex.IsMatch(args.Name, @"(Microsoft|Be\.Stateless)\..+\.XmlSerializers, Version=")) return null;

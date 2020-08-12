@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Be.Stateless.BizTalk.Dsl.Pipeline.CodeDom;
+using Be.Stateless.Extensions;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using Microsoft.CSharp;
@@ -64,6 +65,7 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 			}
 			catch (Exception exception)
 			{
+				if (exception.IsFatal()) throw;
 				Log.LogErrorFromException(exception, true, true, null);
 				return false;
 			}
@@ -75,6 +77,7 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 
 		#endregion
 
+		[SuppressMessage("Performance", "CA1819:Properties should not return arrays")]
 		[Output]
 		public ITaskItem[] CSharpPipelines { get; private set; }
 
