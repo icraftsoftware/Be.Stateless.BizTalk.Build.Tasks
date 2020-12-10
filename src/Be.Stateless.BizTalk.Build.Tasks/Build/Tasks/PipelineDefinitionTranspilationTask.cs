@@ -18,33 +18,19 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using Be.Stateless.BizTalk.Dsl.Pipeline.Extensions;
-using Be.Stateless.Extensions;
-using Microsoft.Build.Evaluation;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
 
 namespace Be.Stateless.BizTalk.Build.Tasks
 {
 	[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Implements Msbuild Task API.")]
 	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Implements Msbuild Task API.")]
-	public abstract class CompilePipelineDefinitionBaseTask : Task
+	public abstract class PipelineDefinitionTranspilationTask : TranspilationTask
 	{
 		[SuppressMessage("Performance", "CA1819:Properties should not return arrays")]
 		[Required]
 		public ITaskItem[] PipelineDefinitionAssemblies { get; set; }
-
-		[SuppressMessage("Performance", "CA1819:Properties should not return arrays")]
-		[Required]
-		public ITaskItem[] ReferencedAssemblies { get; set; }
-
-		[Required]
-		public string RootNamespace { get; set; }
-
-		[Required]
-		public string RootPath { get; set; }
 
 		[SuppressMessage("Performance", "CA1819:Properties should not return arrays")]
 		[SuppressMessage("ReSharper", "ReturnTypeCanBeEnumerable.Global")]
@@ -52,22 +38,9 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 			.Select(pda => pda.GetMetadata("Identity"))
 			.GetPipelineDefinitionTypes();
 
-		[SuppressMessage("Performance", "CA1819:Properties should not return arrays")]
-		protected string[] ReferencedPaths => ReferencedAssemblies
-			.Select(ra => ra.GetMetadata("Identity"))
-			.Select(Path.GetDirectoryName)
-			.ToArray();
-
-		[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-		protected string ComputePipelineOutputDirectory(Type pipelineType)
+		protected string ComputePipelineTranspilationOutputDirectory(Type pipeline)
 		{
-			if (pipelineType == null) throw new ArgumentNullException(nameof(pipelineType));
-			var projectDirectory = RootPath ?? Directory.GetCurrentDirectory();
-			var projectRootNamespace = RootNamespace ?? new Project(BuildEngine.ProjectFileOfTaskNode).AllEvaluatedProperties.Single(p => p.Name == "RootNamespace").EvaluatedValue;
-			var relativePath = !pipelineType.Namespace.IsNullOrWhiteSpace() && pipelineType.Namespace.StartsWith(projectRootNamespace + ".", StringComparison.OrdinalIgnoreCase)
-				? pipelineType.Namespace.Substring(projectRootNamespace.Length + 1)
-				: "Pipelines";
-			return Path.Combine(projectDirectory, relativePath);
+			return ComputeTranspilationOutputDirectory(pipeline, "Pipelines");
 		}
 	}
 }

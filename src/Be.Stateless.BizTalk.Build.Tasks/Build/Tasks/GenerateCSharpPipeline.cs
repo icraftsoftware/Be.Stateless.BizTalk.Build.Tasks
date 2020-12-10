@@ -16,13 +16,11 @@
 
 #endregion
 
-using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using Be.Stateless.BizTalk.CSharp.Extensions;
 using Be.Stateless.BizTalk.Dsl.Pipeline.CodeDom;
-using Be.Stateless.Extensions;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using Microsoft.CSharp;
@@ -30,48 +28,25 @@ using Microsoft.CSharp;
 namespace Be.Stateless.BizTalk.Build.Tasks
 {
 	[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "Msbuild Task.")]
-	public class GenerateCSharpPipeline : CompilePipelineDefinitionBaseTask
+	public class GenerateCSharpPipeline : PipelineDefinitionTranspilationTask
 	{
 		#region Base Class Member Overrides
 
-		public override bool Execute()
+		protected override void Transpile()
 		{
-			try
+			using (var provider = new CSharpCodeProvider())
 			{
-				BizTalkAssemblyResolver.Register(msg => Log.LogMessage(msg), ReferencedPaths);
-				using (var provider = new CSharpCodeProvider())
+				var outputs = new List<ITaskItem>();
+				foreach (var pipeline in PipelineDefinitions)
 				{
-					var outputs = new List<ITaskItem>();
-					foreach (var pipelineType in PipelineDefinitions)
-					{
-						var outputDirectory = ComputePipelineOutputDirectory(pipelineType);
-						var outputFilePath = Path.Combine(outputDirectory, $"{pipelineType.Name}{EXTENSION}");
-						Log.LogMessage(MessageImportance.High, $"Generating pipeline C# code file '{pipelineType.FullName}{EXTENSION}'.");
-						Directory.CreateDirectory(outputDirectory);
-						using (var writer = new StreamWriter(outputFilePath))
-						{
-							provider.GenerateCodeFromCompileUnit(
-								pipelineType.ConvertToCodeCompileUnit(),
-								writer,
-								new CodeGeneratorOptions { BracingStyle = "C", IndentString = "\t", VerbatimOrder = true });
-						}
-
-						Log.LogMessage(MessageImportance.High, $"Adding pipeline to output item {nameof(CSharpPipelines)} group {outputFilePath}");
-						outputs.Add(new TaskItem(outputFilePath));
-					}
-					CSharpPipelines = outputs.ToArray();
+					var outputDirectory = ComputePipelineTranspilationOutputDirectory(pipeline);
+					var outputFilePath = Path.Combine(outputDirectory, $"{pipeline.Name}.btp.cs");
+					Log.LogMessage(MessageImportance.High, $"Generating pipeline C# code file '{pipeline.FullName}'.");
+					provider.GenerateAndSaveCodeFromCompileUnit(pipeline.ConvertToPipelineRuntimeCodeCompileUnit(), outputFilePath);
+					Log.LogMessage(MessageImportance.Low, $"Adding pipeline to output item {nameof(CSharpPipelines)} group {outputFilePath}");
+					outputs.Add(new TaskItem(outputFilePath));
 				}
-				return true;
-			}
-			catch (Exception exception)
-			{
-				if (exception.IsFatal()) throw;
-				Log.LogErrorFromException(exception, true, true, null);
-				return false;
-			}
-			finally
-			{
-				BizTalkAssemblyResolver.Unregister();
+				CSharpPipelines = outputs.ToArray();
 			}
 		}
 
@@ -80,7 +55,5 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 		[SuppressMessage("Performance", "CA1819:Properties should not return arrays")]
 		[Output]
 		public ITaskItem[] CSharpPipelines { get; private set; }
-
-		private const string EXTENSION = ".btp.cs";
 	}
 }

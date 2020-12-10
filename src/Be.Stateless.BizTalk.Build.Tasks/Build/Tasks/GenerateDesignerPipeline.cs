@@ -16,56 +16,39 @@
 
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Be.Stateless.BizTalk.Dsl.Pipeline.Xml.Serialization;
-using Be.Stateless.Extensions;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
 namespace Be.Stateless.BizTalk.Build.Tasks
 {
 	[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "Msbuild Task.")]
-	public class GenerateDesignerPipeline : CompilePipelineDefinitionBaseTask
+	public class GenerateDesignerPipeline : PipelineDefinitionTranspilationTask
 	{
 		#region Base Class Member Overrides
 
-		public override bool Execute()
+		protected override void Transpile()
 		{
-			try
+			var outputs = new List<ITaskItem>();
+			foreach (var pipeline in PipelineDefinitions)
 			{
-				BizTalkAssemblyResolver.Register(msg => Log.LogMessage(msg), ReferencedPaths);
-				var outputs = new List<ITaskItem>();
-				foreach (var pipelineType in PipelineDefinitions)
-				{
-					var outputDirectory = ComputePipelineOutputDirectory(pipelineType);
-					var outputFilePath = Path.Combine(outputDirectory, $"{pipelineType.Name}{EXTENSION}");
-					Log.LogMessage(MessageImportance.High, $"Generating pipeline designer file '{pipelineType.FullName}{EXTENSION}'.");
-					Directory.CreateDirectory(outputDirectory);
-					var serializer = pipelineType.GetPipelineDesignerDocumentSerializer();
-					serializer.Save(outputFilePath);
+				var outputDirectory = ComputePipelineTranspilationOutputDirectory(pipeline);
+				var outputFilePath = Path.Combine(outputDirectory, $"{pipeline.Name}.btp");
+				Log.LogMessage(MessageImportance.High, $"Generating pipeline designer file '{outputFilePath}'.");
+				Directory.CreateDirectory(outputDirectory);
+				var serializer = pipeline.GetPipelineDesignerDocumentSerializer();
+				serializer.Save(outputFilePath);
 
-					Log.LogMessage(MessageImportance.High, $"Adding pipeline designer to output item {nameof(DesignerPipelines)} group {outputFilePath}");
-					var taskItem = new TaskItem(outputFilePath);
-					taskItem.SetMetadata("TypeName", pipelineType.Name);
-					taskItem.SetMetadata("Namespace", pipelineType.Namespace);
-					outputs.Add(taskItem);
-				}
-				DesignerPipelines = outputs.ToArray();
-				return true;
+				Log.LogMessage(MessageImportance.Low, $"Adding pipeline designer to output item {nameof(DesignerPipelines)} group {outputFilePath}");
+				var taskItem = new TaskItem(outputFilePath);
+				taskItem.SetMetadata("TypeName", pipeline.Name);
+				taskItem.SetMetadata("Namespace", pipeline.Namespace);
+				outputs.Add(taskItem);
 			}
-			catch (Exception exception)
-			{
-				if (exception.IsFatal()) throw;
-				Log.LogErrorFromException(exception, true, true, null);
-				return false;
-			}
-			finally
-			{
-				BizTalkAssemblyResolver.Unregister();
-			}
+			DesignerPipelines = outputs.ToArray();
 		}
 
 		#endregion
@@ -73,7 +56,5 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 		[SuppressMessage("Performance", "CA1819:Properties should not return arrays")]
 		[Output]
 		public ITaskItem[] DesignerPipelines { get; private set; }
-
-		private const string EXTENSION = ".btp";
 	}
 }
