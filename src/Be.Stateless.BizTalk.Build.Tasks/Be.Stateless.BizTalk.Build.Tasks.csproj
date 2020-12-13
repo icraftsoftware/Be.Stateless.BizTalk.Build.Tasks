@@ -19,9 +19,7 @@
     <IsPackable>true</IsPackable>
     <PackageId>$(AssemblyTitle)</PackageId>
     <PackageDescription>$(Description)</PackageDescription>
-    <!--<PackageIconUrl>icon url prop</PackageIconUrl>-->
     <PackageProjectUrl>$(RepositoryUrl)</PackageProjectUrl>
-    <!--<PackageReleaseNotes>release notes prop</PackageReleaseNotes>-->
     <PackageTags>library extension utility</PackageTags>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -41,6 +39,10 @@
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.0.20345.39930" />
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.20345.39753" />
     <PackageReference Include="Be.Stateless.Extensions" Version="2.0.20338.1409" />
+    <PackageReference Include="BizTalk.Server.2020.Utilities" Version="1.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Build" Version="16.8.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Build.Framework" Version="16.8.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="16.8.0" PrivateAssets="All" />
