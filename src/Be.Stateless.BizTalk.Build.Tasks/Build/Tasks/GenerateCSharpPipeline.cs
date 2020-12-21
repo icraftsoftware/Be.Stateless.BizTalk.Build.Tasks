@@ -27,7 +27,7 @@ using Microsoft.CSharp;
 
 namespace Be.Stateless.BizTalk.Build.Tasks
 {
-	[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "Msbuild Task.")]
+	[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "MSBuild Task.")]
 	public class GenerateCSharpPipeline : PipelineDefinitionTranspilationTask
 	{
 		#region Base Class Member Overrides
@@ -52,7 +52,6 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 
 		#endregion
 
-		[SuppressMessage("Performance", "CA1819:Properties should not return arrays")]
 		[Output]
 		public ITaskItem[] CSharpPipelines { get; private set; }
 	}

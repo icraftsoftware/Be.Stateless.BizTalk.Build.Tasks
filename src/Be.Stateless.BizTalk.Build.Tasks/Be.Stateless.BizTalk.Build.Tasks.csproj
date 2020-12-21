@@ -36,17 +36,17 @@
 
   <ItemGroup>
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Abstractions" Version="2.0.20345.39507" />
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.0.20345.39930" />
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.20345.39753" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.0.20356.31570" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.20356.31483" />
     <PackageReference Include="Be.Stateless.Extensions" Version="2.0.20338.1409" />
-    <PackageReference Include="BizTalk.Server.2020.Utilities" Version="1.0.2">
+    <PackageReference Include="BizTalk.Server.2020.Utilities" Version="1.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Build" Version="16.8.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Build.Framework" Version="16.8.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="16.8.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

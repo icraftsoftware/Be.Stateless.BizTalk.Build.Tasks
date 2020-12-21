@@ -16,61 +16,42 @@
 
 #endregion
 
-using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using Be.Stateless.BizTalk.Dsl;
-using Be.Stateless.BizTalk.Dsl.Binding.CodeDom;
-using Be.Stateless.Extensions;
+using Microsoft.BizTalk.Studio.Extensibility;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
+using Microsoft.VisualStudio.BizTalkProject.Base;
+using Microsoft.VisualStudio.BizTalkProject.BuildTasks;
 
 namespace Be.Stateless.BizTalk.Build.Tasks
 {
+	// see Microsoft.VisualStudio.BizTalkProject.BuildTasks.MapperCompiler, Microsoft.VisualStudio.BizTalkProject.BuildTasks, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35
 	[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "MSBuild Task.")]
-	public class ResolveBizTalkAssembly : Task
+	public class GenerateCSharpMap : BizTalkCompilationTask
 	{
 		#region Base Class Member Overrides
 
-		public override bool Execute()
+		protected override IBizTalkCompiler BizTalkCompiler => new Microsoft.BizTalk.Mapper.Compiler.MapperCompiler();
+
+		protected override List<BizTalkFileInfo> FilesToCompile =>
+			BizTalkMaps.Select(mapItem => (BizTalkFileInfo) MapBuildFileInfo.GetMapperFileInfo(mapItem, RootNamespace)).ToList();
+
+		protected override ITaskItem[] OutputItemGroup
 		{
-			try
-			{
-				BizTalkAssemblyResolver.Register(msg => Log.LogMessage(msg), ReferencedPaths);
-				BizTalkAssemblies = ReferencedAssemblies
-					.Where(a => Assembly.LoadFrom(a.GetMetadata("Identity")).IsBizTalkAssembly())
-					.ToArray();
-				return true;
-			}
-			catch (Exception exception)
-			{
-				if (exception.IsFatal()) throw;
-				Log.LogErrorFromException(exception, true, true, null);
-				return false;
-			}
-			finally
-			{
-				BizTalkAssemblyResolver.Unregister();
-			}
+			set => CSharpMaps = value;
 		}
 
 		#endregion
 
 		[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "MSBuild Task API.")]
 		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "MSBuild Task API.")]
-		[Output]
-		public ITaskItem[] BizTalkAssemblies { get; private set; }
+		[Required]
+		public ITaskItem[] BizTalkMaps { get; set; }
 
 		[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "MSBuild Task API.")]
 		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "MSBuild Task API.")]
-		[Required]
-		public ITaskItem[] ReferencedAssemblies { get; set; }
-
-		private string[] ReferencedPaths => ReferencedAssemblies
-			.Select(ra => ra.GetMetadata("Identity"))
-			.Select(Path.GetDirectoryName)
-			.ToArray();
+		[Output]
+		public ITaskItem[] CSharpMaps { get; private set; }
 	}
 }

@@ -28,9 +28,6 @@ using Microsoft.Build.Utilities;
 
 namespace Be.Stateless.BizTalk.Build.Tasks
 {
-	[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-	[SuppressMessage("ReSharper", "MemberCanBeProtected.Global")]
-	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 	public abstract class TranspilationTask : Task
 	{
 		#region Base Class Member Overrides
@@ -57,18 +54,22 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 
 		#endregion
 
+		[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "MSBuild Task API.")]
+		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "MSBuild Task API.")]
 		[Required]
-		[SuppressMessage("Performance", "CA1819:Properties should not return arrays")]
 		public ITaskItem[] ReferencedAssemblies { get; set; }
 
+		[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "MSBuild Task API.")]
+		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "MSBuild Task API.")]
 		[Required]
 		public string RootNamespace { get; set; }
 
+		[SuppressMessage("ReSharper", "MemberCanBeProtected.Global", Justification = "MSBuild Task API.")]
+		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "MSBuild Task API.")]
 		[Required]
 		public string RootPath { get; set; }
 
-		[SuppressMessage("Performance", "CA1819:Properties should not return arrays")]
-		protected string[] ReferencedPaths => ReferencedAssemblies
+		private string[] ReferencedPaths => ReferencedAssemblies
 			.Select(ra => ra.GetMetadata("Identity"))
 			.Select(Path.GetDirectoryName)
 			.ToArray();

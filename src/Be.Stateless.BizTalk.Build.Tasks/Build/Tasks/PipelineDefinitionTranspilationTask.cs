@@ -24,15 +24,13 @@ using Microsoft.Build.Framework;
 
 namespace Be.Stateless.BizTalk.Build.Tasks
 {
-	[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Implements Msbuild Task API.")]
-	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Implements Msbuild Task API.")]
 	public abstract class PipelineDefinitionTranspilationTask : TranspilationTask
 	{
-		[SuppressMessage("Performance", "CA1819:Properties should not return arrays")]
+		[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "MSBuild Task API.")]
+		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "MSBuild Task API.")]
 		[Required]
 		public ITaskItem[] PipelineDefinitionAssemblies { get; set; }
 
-		[SuppressMessage("Performance", "CA1819:Properties should not return arrays")]
 		[SuppressMessage("ReSharper", "ReturnTypeCanBeEnumerable.Global")]
 		protected Type[] PipelineDefinitions => PipelineDefinitionAssemblies
 			.Select(pda => pda.GetMetadata("Identity"))
