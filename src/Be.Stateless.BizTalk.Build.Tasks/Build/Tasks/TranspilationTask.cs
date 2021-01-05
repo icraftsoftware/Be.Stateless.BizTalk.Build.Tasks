@@ -17,12 +17,15 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using Be.Stateless.BizTalk.Dsl;
 using Be.Stateless.Extensions;
 using Be.Stateless.IO.Extensions;
+using Be.Stateless.Linq;
+using Be.Stateless.Linq.Extensions;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -36,6 +39,7 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 		{
 			try
 			{
+				Cleanup();
 				BizTalkAssemblyResolver.Register(msg => Log.LogMessage(msg), ReferencedPaths);
 				Transpile();
 				return true;
@@ -59,31 +63,70 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 		[Required]
 		public ITaskItem[] ReferencedAssemblies { get; set; }
 
-		[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "MSBuild Task API.")]
-		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "MSBuild Task API.")]
 		[Required]
 		public string RootNamespace { get; set; }
 
-		[SuppressMessage("ReSharper", "MemberCanBeProtected.Global", Justification = "MSBuild Task API.")]
-		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "MSBuild Task API.")]
 		[Required]
 		public string RootPath { get; set; }
+
+		protected abstract string FallBackRootPath { get; }
+
+		protected abstract Type[] InputTypes { get; }
+
+		protected abstract string OutputFileExtension { get; }
+
+		protected HashSet<ITaskItem> OutputTaskItems { get; } =
+			new HashSet<ITaskItem>(new LambdaComparer<ITaskItem>((lti, rti) => lti.ItemSpec.Equals(rti.ItemSpec, StringComparison.InvariantCultureIgnoreCase)));
 
 		private string[] ReferencedPaths => ReferencedAssemblies
 			.Select(ra => ra.GetMetadata("Identity"))
 			.Select(Path.GetDirectoryName)
 			.ToArray();
 
-		protected abstract void Transpile();
+		internal void Transpile()
+		{
+			foreach (var type in InputTypes)
+			{
+				var taskItem = CreateOutputTaskItem(type);
+				Transpile(type, taskItem);
+				if (!OutputTaskItems.Add(taskItem)) throw new InvalidOperationException($"'{taskItem.ItemSpec}' output task item has been defined multiple times.");
+				Log.LogMessage(MessageImportance.Low, $"Adding output task item to output item group '{taskItem.ItemSpec}'.");
+			}
+		}
 
-		protected string ComputeTranspilationOutputDirectory(Type type, string defaultRelativePath)
+		protected abstract void Transpile(Type type, ITaskItem outputTaskItem);
+
+		internal ITaskItem CreateOutputTaskItem(Type type)
 		{
 			if (type == null) throw new ArgumentNullException(nameof(type));
 			var commonNamespacePrefix = new[] { RootNamespace, type.Namespace }.GetCommonPath('.');
-			var relativePath = commonNamespacePrefix.IsNullOrEmpty()
-				? defaultRelativePath
-				: type.Namespace!.Substring(commonNamespacePrefix.Length + 1).Replace('.', Path.DirectorySeparatorChar);
-			return Path.Combine(RootPath, relativePath);
+			var outputDirectory = commonNamespacePrefix.IsNullOrEmpty()
+				? Path.Combine(FallBackRootPath, type.Namespace!.Replace('.', Path.DirectorySeparatorChar))
+				: Path.Combine(RootPath, type.Namespace!.Substring(commonNamespacePrefix.Length + 1).Replace('.', Path.DirectorySeparatorChar));
+			var outputFilePath = Path.Combine(outputDirectory, $"{type.Name}{OutputFileExtension}");
+			return new TaskItem(outputFilePath);
+		}
+
+		private void Cleanup()
+		{
+			Log.LogMessage(MessageImportance.Normal, "Cleaning up previous transpilation outputs.");
+			Directory.EnumerateFiles(RootPath, $"*{OutputFileExtension}", SearchOption.AllDirectories)
+				.ForEach(
+					filePath => {
+						Log.LogMessage(MessageImportance.Low, $"Deleting file {filePath}.");
+						File.Delete(filePath);
+						CleanFolder(Path.GetDirectoryName(filePath));
+					});
+		}
+
+		private void CleanFolder(string directory)
+		{
+			while (!string.Equals(directory, RootPath, StringComparison.OrdinalIgnoreCase) && !Directory.EnumerateFileSystemEntries(directory!).Any())
+			{
+				Log.LogMessage(MessageImportance.Low, $"Deleting directory {directory}.");
+				Directory.Delete(directory);
+				directory = Path.GetDirectoryName(directory);
+			}
 		}
 	}
 }

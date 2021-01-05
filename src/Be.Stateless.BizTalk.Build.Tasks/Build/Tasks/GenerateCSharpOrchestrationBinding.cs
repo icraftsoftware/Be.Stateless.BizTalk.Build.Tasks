@@ -17,16 +17,13 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using Be.Stateless.BizTalk.CSharp.Extensions;
 using Be.Stateless.BizTalk.Dsl.Binding.CodeDom;
-using Be.Stateless.Linq.Extensions;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
 using Microsoft.CSharp;
 
 namespace Be.Stateless.BizTalk.Build.Tasks
@@ -36,65 +33,35 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 	{
 		#region Base Class Member Overrides
 
-		protected override void Transpile()
-		{
-			using (var provider = new CSharpCodeProvider())
-			{
-				DeletePreviousCSharpOrchestrationBindings();
-				var outputs = new List<ITaskItem>();
-				foreach (var orchestration in Orchestrations)
-				{
-					var outputDirectory = ComputeTranspilationOutputDirectory(orchestration, "Orchestrations");
-					var outputFilePath = Path.Combine(outputDirectory, $"{orchestration.Name}{EXTENSION}");
-					Log.LogMessage(MessageImportance.High, "Generating orchestration C# binding class '{0}'.", orchestration.FullName);
-					provider.GenerateAndSaveCodeFromCompileUnit(orchestration.ConvertToOrchestrationBindingCodeCompileUnit(), outputFilePath);
-					Log.LogMessage(MessageImportance.Low, $"Adding orchestration binding class  to output item {nameof(CSharpOrchestrationBindings)} group {outputFilePath}");
-					outputs.Add(new TaskItem(outputFilePath));
-				}
-				CSharpOrchestrationBindings = outputs.ToArray();
-			}
-		}
+		protected override string FallBackRootPath => Path.Combine(RootPath, "Orchestrations");
 
-		#endregion
-
-		[Output]
-		public ITaskItem[] CSharpOrchestrationBindings { get; private set; }
-
-		[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "MSBuild Task API.")]
-		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "MSBuild Task API.")]
-		[Required]
-		public ITaskItem[] OrchestrationAssemblies { get; set; }
-
-		[SuppressMessage("ReSharper", "ReturnTypeCanBeEnumerable.Local")]
-		private Type[] Orchestrations => OrchestrationAssemblies
+		protected override Type[] InputTypes => OrchestrationAssemblies
 			.Select(ra => ra.GetMetadata("Identity"))
 			.Select(Assembly.LoadFrom)
 			.ToArray() // make sure all assemblies are loaded before proceeding with reflection
 			.SelectMany(a => a.GetOrchestrationTypes())
 			.ToArray();
 
-		private void DeletePreviousCSharpOrchestrationBindings()
-		{
-			Log.LogMessage(MessageImportance.Normal, "Deleting previously generated orchestration C# binding class files.");
-			Directory.EnumerateFiles(RootPath, $"*{EXTENSION}", SearchOption.AllDirectories)
-				.ForEach(
-					filePath => {
-						Log.LogMessage(MessageImportance.Low, $"Deleting file {filePath}.");
-						File.Delete(filePath);
-						CleanFolder(Path.GetDirectoryName(filePath));
-					});
-		}
+		protected override string OutputFileExtension => "OrchestrationBinding.Designer.cs";
 
-		private void CleanFolder(string directory)
+		protected override void Transpile(Type type, ITaskItem outputTaskItem)
 		{
-			while (!string.Equals(directory, RootPath, StringComparison.OrdinalIgnoreCase) && !Directory.EnumerateFileSystemEntries(directory!).Any())
+			using (var provider = new CSharpCodeProvider())
 			{
-				Log.LogMessage(MessageImportance.Low, $"Deleting directory {directory}.");
-				Directory.Delete(directory);
-				directory = Path.GetDirectoryName(directory);
+				Log.LogMessage(MessageImportance.High, "Generating orchestration C# binding class '{0}'.", type.FullName);
+				provider.GenerateAndSaveCodeFromCompileUnit(type.ConvertToOrchestrationBindingCodeCompileUnit(), outputTaskItem.ItemSpec);
 			}
 		}
 
-		private const string EXTENSION = "OrchestrationBinding.Designer.cs";
+		#endregion
+
+		[SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "MSBuild Task API.")]
+		[Output]
+		public ITaskItem[] CSharpOrchestrationBindings => OutputTaskItems.ToArray();
+
+		[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "MSBuild Task API.")]
+		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "MSBuild Task API.")]
+		[Required]
+		public ITaskItem[] OrchestrationAssemblies { get; set; }
 	}
 }

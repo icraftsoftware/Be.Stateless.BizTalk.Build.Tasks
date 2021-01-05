@@ -36,10 +36,10 @@
 
   <ItemGroup>
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Abstractions" Version="2.0.20345.39507" />
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.0.20356.31570" />
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.20356.31483" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.0.21005.39894" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.21005.35154" />
     <PackageReference Include="Be.Stateless.Extensions" Version="2.0.20338.1409" />
-    <PackageReference Include="BizTalk.Server.2020.Utilities" Version="1.0.3">
+    <PackageReference Include="BizTalk.Server.2020.Utilities" Version="1.0.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

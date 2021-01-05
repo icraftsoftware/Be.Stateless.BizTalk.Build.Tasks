@@ -16,13 +16,12 @@
 
 #endregion
 
-using System.Collections.Generic;
+using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
+using System.Linq;
 using Be.Stateless.BizTalk.CSharp.Extensions;
 using Be.Stateless.BizTalk.Dsl.Pipeline.CodeDom;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
 using Microsoft.CSharp;
 
 namespace Be.Stateless.BizTalk.Build.Tasks
@@ -32,27 +31,21 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 	{
 		#region Base Class Member Overrides
 
-		protected override void Transpile()
+		protected override string OutputFileExtension => ".btp.cs";
+
+		protected override void Transpile(Type type, ITaskItem outputTaskItem)
 		{
 			using (var provider = new CSharpCodeProvider())
 			{
-				var outputs = new List<ITaskItem>();
-				foreach (var pipeline in PipelineDefinitions)
-				{
-					var outputDirectory = ComputePipelineTranspilationOutputDirectory(pipeline);
-					var outputFilePath = Path.Combine(outputDirectory, $"{pipeline.Name}.btp.cs");
-					Log.LogMessage(MessageImportance.High, $"Generating pipeline C# code file '{pipeline.FullName}'.");
-					provider.GenerateAndSaveCodeFromCompileUnit(pipeline.ConvertToPipelineRuntimeCodeCompileUnit(), outputFilePath);
-					Log.LogMessage(MessageImportance.Low, $"Adding pipeline to output item {nameof(CSharpPipelines)} group {outputFilePath}");
-					outputs.Add(new TaskItem(outputFilePath));
-				}
-				CSharpPipelines = outputs.ToArray();
+				Log.LogMessage(MessageImportance.High, $"Generating C# code file for pipeline '{type.FullName}'.");
+				provider.GenerateAndSaveCodeFromCompileUnit(type.ConvertToPipelineRuntimeCodeCompileUnit(), outputTaskItem.ItemSpec);
 			}
 		}
 
 		#endregion
 
+		[SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "MSBuild Task API.")]
 		[Output]
-		public ITaskItem[] CSharpPipelines { get; private set; }
+		public ITaskItem[] CSharpPipelines => OutputTaskItems.ToArray();
 	}
 }

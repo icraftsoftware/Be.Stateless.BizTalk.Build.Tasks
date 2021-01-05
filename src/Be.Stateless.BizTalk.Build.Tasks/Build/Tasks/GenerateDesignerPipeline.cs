@@ -16,12 +16,12 @@
 
 #endregion
 
-using System.Collections.Generic;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using Be.Stateless.BizTalk.Dsl.Pipeline.Xml.Serialization;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
 
 namespace Be.Stateless.BizTalk.Build.Tasks
 {
@@ -30,31 +30,22 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 	{
 		#region Base Class Member Overrides
 
-		protected override void Transpile()
-		{
-			var outputs = new List<ITaskItem>();
-			foreach (var pipeline in PipelineDefinitions)
-			{
-				var outputDirectory = ComputePipelineTranspilationOutputDirectory(pipeline);
-				var outputFilePath = Path.Combine(outputDirectory, $"{pipeline.Name}.btp");
-				Log.LogMessage(MessageImportance.High, $"Generating pipeline designer file '{outputFilePath}'.");
-				Directory.CreateDirectory(outputDirectory);
-				var serializer = pipeline.GetPipelineDesignerDocumentSerializer();
-				serializer.Save(outputFilePath);
+		protected override string OutputFileExtension => ".btp";
 
-				Log.LogMessage(MessageImportance.Low, $"Adding pipeline designer to output item {nameof(DesignerPipelines)} group {outputFilePath}");
-				var taskItem = new TaskItem(outputFilePath);
-				taskItem.SetMetadata("TypeName", pipeline.Name);
-				taskItem.SetMetadata("Namespace", pipeline.Namespace);
-				outputs.Add(taskItem);
-			}
-			DesignerPipelines = outputs.ToArray();
+		protected override void Transpile(Type type, ITaskItem outputTaskItem)
+		{
+			Log.LogMessage(MessageImportance.High, $"Generating designer file for type '{type.FullName}'.");
+			Directory.CreateDirectory(Path.GetDirectoryName(outputTaskItem.ItemSpec)!);
+			var serializer = type.GetPipelineDesignerDocumentSerializer();
+			serializer.Save(outputTaskItem.ItemSpec);
+			outputTaskItem.SetMetadata("TypeName", type.Name);
+			outputTaskItem.SetMetadata("Namespace", type.Namespace);
 		}
 
 		#endregion
 
-		[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "MSBuild Task API.")]
+		[SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "MSBuild Task API.")]
 		[Output]
-		public ITaskItem[] DesignerPipelines { get; private set; }
+		public ITaskItem[] DesignerPipelines => OutputTaskItems.ToArray();
 	}
 }

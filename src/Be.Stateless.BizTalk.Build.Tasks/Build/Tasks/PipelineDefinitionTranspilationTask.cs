@@ -18,6 +18,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using Be.Stateless.BizTalk.Dsl.Pipeline.Extensions;
 using Microsoft.Build.Framework;
@@ -26,19 +27,19 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 {
 	public abstract class PipelineDefinitionTranspilationTask : TranspilationTask
 	{
+		#region Base Class Member Overrides
+
+		protected override string FallBackRootPath => Path.Combine(RootPath, "Pipelines");
+
+		protected override Type[] InputTypes => PipelineDefinitionAssemblies
+			.Select(pda => pda.GetMetadata("Identity"))
+			.GetPipelineDefinitionTypes();
+
+		#endregion
+
 		[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "MSBuild Task API.")]
 		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "MSBuild Task API.")]
 		[Required]
 		public ITaskItem[] PipelineDefinitionAssemblies { get; set; }
-
-		[SuppressMessage("ReSharper", "ReturnTypeCanBeEnumerable.Global")]
-		protected Type[] PipelineDefinitions => PipelineDefinitionAssemblies
-			.Select(pda => pda.GetMetadata("Identity"))
-			.GetPipelineDefinitionTypes();
-
-		protected string ComputePipelineTranspilationOutputDirectory(Type pipeline)
-		{
-			return ComputeTranspilationOutputDirectory(pipeline, "Pipelines");
-		}
 	}
 }
