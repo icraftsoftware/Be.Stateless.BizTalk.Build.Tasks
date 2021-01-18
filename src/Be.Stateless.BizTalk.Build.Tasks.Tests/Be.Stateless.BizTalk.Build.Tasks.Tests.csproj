@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <RootNamespace>Be.Stateless.BizTalk</RootNamespace>
-    <AssemblyTitle>Be.Stateless.BizTalk.Build.Tasks.Tests</AssemblyTitle>
+    <AssemblyName>Be.Stateless.BizTalk.Build.Tasks.Tests</AssemblyName>
     <Description>Unit tests for BizTalk Factory's MSBuild tasks for general purpose BizTalk Server development.</Description>
   </PropertyGroup>
 
@@ -13,8 +13,8 @@
 
   <ItemGroup>
     <PackageReference Include="Be.Stateless.BizTalk.Dummies" Version="2.0.20338.28863" />
-    <PackageReference Include="Be.Stateless.Common.Unit" Version="2.0.20338.28706" />
-    <PackageReference Include="coverlet.msbuild" Version="2.9.0">
+    <PackageReference Include="Be.Stateless.Common.Unit" Version="2.0.21005.39505" />
+    <PackageReference Include="coverlet.msbuild" Version="3.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
