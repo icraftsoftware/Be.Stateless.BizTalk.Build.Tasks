@@ -14,7 +14,7 @@
   <ItemGroup>
     <PackageReference Include="Be.Stateless.BizTalk.Dummies" Version="2.0.20338.28863" />
     <PackageReference Include="Be.Stateless.Common.Unit" Version="2.0.21005.39505" />
-    <PackageReference Include="coverlet.msbuild" Version="3.0.1">
+    <PackageReference Include="coverlet.msbuild" Version="2.9.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
