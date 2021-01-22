@@ -31,21 +31,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Build\Tasks\GenerateCSharpEnvironmentSettings.xslt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Build\Tasks\GenerateCSharpEnvironmentSettings.xslt" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\..\.settings\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Abstractions" Version="2.0.21012.21174" />
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.0.21018.35816" />
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.21012.60359" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Abstractions" Version="2.0.21021.26561" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.0.21022.221" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Environment.Settings" Version="2.0.21022.221" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.21021.29064" />
     <PackageReference Include="Be.Stateless.Extensions" Version="2.0.21005.38790" />
     <PackageReference Include="BizTalk.Server.2020.Utilities" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>

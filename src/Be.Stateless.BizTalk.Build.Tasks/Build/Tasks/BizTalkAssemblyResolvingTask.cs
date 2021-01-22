@@ -16,31 +16,53 @@
 
 #endregion
 
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
-using System.Reflection;
-using Be.Stateless.BizTalk.Dsl.Binding.CodeDom;
+using Be.Stateless.BizTalk.Dsl;
+using Be.Stateless.Extensions;
 using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
 
 namespace Be.Stateless.BizTalk.Build.Tasks
 {
-	[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "MSBuild Task.")]
-	public class ResolveBizTalkAssembly : BizTalkAssemblyResolvingTask
+	public abstract class BizTalkAssemblyResolvingTask : Task
 	{
 		#region Base Class Member Overrides
 
-		protected override void ExecuteCore()
+		public override bool Execute()
 		{
-			BizTalkAssemblies = ReferencedAssemblies
-				.Where(a => Assembly.LoadFrom(a.GetMetadata("Identity")).IsBizTalkAssembly())
-				.ToArray();
+			try
+			{
+				BizTalkAssemblyResolver.Register(msg => Log.LogMessage(msg), ReferencedPaths);
+				ExecuteCore();
+				return true;
+			}
+			catch (Exception exception)
+			{
+				if (exception.IsFatal()) throw;
+				Log.LogErrorFromException(exception, true, true, null);
+				return false;
+			}
+			finally
+			{
+				BizTalkAssemblyResolver.Unregister();
+			}
 		}
 
 		#endregion
 
-		[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "MSBuild Task API.")]
+		[SuppressMessage("ReSharper", "MemberCanBeProtected.Global", Justification = "MSBuild Task API.")]
 		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "MSBuild Task API.")]
-		[Output]
-		public ITaskItem[] BizTalkAssemblies { get; private set; }
+		[Required]
+		public ITaskItem[] ReferencedAssemblies { get; set; }
+
+		private string[] ReferencedPaths => ReferencedAssemblies
+			.Select(ra => ra.GetMetadata("Identity"))
+			.Select(Path.GetDirectoryName)
+			.ToArray();
+
+		protected abstract void ExecuteCore();
 	}
 }

@@ -28,7 +28,7 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 {
 	// see Microsoft.VisualStudio.BizTalkProject.BuildTasks.MapperCompiler, Microsoft.VisualStudio.BizTalkProject.BuildTasks, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35
 	[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "MSBuild Task.")]
-	public class GenerateCSharpMap : BizTalkCompilationTask
+	public class GenerateCSharpMap : MicrosoftBizTalkCompilerWrapperTask
 	{
 		#region Base Class Member Overrides
 

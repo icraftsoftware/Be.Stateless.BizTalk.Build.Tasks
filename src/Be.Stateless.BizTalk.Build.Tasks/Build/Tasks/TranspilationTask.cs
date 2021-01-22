@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,10 +18,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using Be.Stateless.BizTalk.Dsl;
 using Be.Stateless.Extensions;
 using Be.Stateless.IO.Extensions;
 using Be.Stateless.Linq;
@@ -31,37 +29,17 @@ using Microsoft.Build.Utilities;
 
 namespace Be.Stateless.BizTalk.Build.Tasks
 {
-	public abstract class TranspilationTask : Task
+	public abstract class TranspilationTask : BizTalkAssemblyResolvingTask
 	{
 		#region Base Class Member Overrides
 
-		public override bool Execute()
+		protected override void ExecuteCore()
 		{
-			try
-			{
-				Cleanup();
-				BizTalkAssemblyResolver.Register(msg => Log.LogMessage(msg), ReferencedPaths);
-				Transpile();
-				return true;
-			}
-			catch (Exception exception)
-			{
-				if (exception.IsFatal()) throw;
-				Log.LogErrorFromException(exception, true, true, null);
-				return false;
-			}
-			finally
-			{
-				BizTalkAssemblyResolver.Unregister();
-			}
+			Cleanup();
+			Transpile();
 		}
 
 		#endregion
-
-		[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "MSBuild Task API.")]
-		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "MSBuild Task API.")]
-		[Required]
-		public ITaskItem[] ReferencedAssemblies { get; set; }
 
 		[Required]
 		public string RootNamespace { get; set; }
@@ -77,11 +55,6 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 
 		protected HashSet<ITaskItem> OutputTaskItems { get; } =
 			new HashSet<ITaskItem>(new LambdaComparer<ITaskItem>((lti, rti) => lti.ItemSpec.Equals(rti.ItemSpec, StringComparison.InvariantCultureIgnoreCase)));
-
-		private string[] ReferencedPaths => ReferencedAssemblies
-			.Select(ra => ra.GetMetadata("Identity"))
-			.Select(Path.GetDirectoryName)
-			.ToArray();
 
 		internal void Transpile()
 		{

@@ -30,7 +30,7 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 	// see Microsoft.VisualStudio.BizTalkProject.BuildTasks.SchemaCompiler, Microsoft.VisualStudio.BizTalkProject.BuildTasks, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35
 	// TODO add disabling warning support in *.*proj files for envelope where not all root is a body xpath
 	[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "MSBuild Task.")]
-	public class GenerateCSharpSchema : BizTalkCompilationTask
+	public class GenerateCSharpSchema : MicrosoftBizTalkCompilerWrapperTask
 	{
 		#region Base Class Member Overrides
 
