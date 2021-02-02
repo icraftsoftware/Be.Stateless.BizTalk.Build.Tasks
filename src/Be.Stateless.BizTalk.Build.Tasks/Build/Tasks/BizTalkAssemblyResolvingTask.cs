@@ -35,8 +35,10 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 		{
 			try
 			{
-				BizTalkAssemblyResolver.Register(msg => Log.LogMessage(msg), ReferencedPaths);
-				ExecuteCore();
+				using (new BizTalkAssemblyResolver(msg => Log.LogMessage(msg), true, ReferencedPaths))
+				{
+					ExecuteCore();
+				}
 				return true;
 			}
 			catch (Exception exception)
@@ -44,10 +46,6 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 				if (exception.IsFatal()) throw;
 				Log.LogErrorFromException(exception, true, true, null);
 				return false;
-			}
-			finally
-			{
-				BizTalkAssemblyResolver.Unregister();
 			}
 		}
 
