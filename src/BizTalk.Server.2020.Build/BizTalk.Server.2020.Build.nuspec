@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>BizTalk.Server.2020.Build</id>
+    <version>$version$</version>
+    <developmentDependency>true</developmentDependency>
+    <authors>François Chabot</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <projectUrl>https://github.com/icraftsoftware/Be.Stateless.BizTalk.Build.Tasks</projectUrl>
+    <description>BizTalk Factory's BizTalk Server 2020 build tools.</description>
+    <copyright>Copyright © 2012 - 2021 be.stateless. All rights reserved.</copyright>
+    <tags>BizTalk Server Build</tags>
+  </metadata>
+  <files>
+    <file src="**\*.*" exclude="obj\**\*;*.*" />
+  </files>
+</package>

@@ -1,0 +1,185 @@
+<Project TreatAsLocalProperty="CustomBeforeBuildDependsOn">
+
+  <PropertyGroup>
+    <WarningLevel Condition=" '$(WarningLevel)' == '' ">4</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CustomBeforeBuildDependsOn>
+      $(CustomBeforeBuildDependsOn);
+      RemoveGeneratedBizTalkCSharpItemsFromCompileItemGroup;
+      GenerateCSharpEnvironmentSettingItems;
+      GenerateCSharpSchemaItems;
+      GenerateCSharpMapItems;
+      GenerateDesignerPipelineItems;
+      GenerateCSharpPipelineItems;
+      GenerateCSharpOrchestrationBindingItems;
+    </CustomBeforeBuildDependsOn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- BizTalk Maps default inclusion glob -->
+    <BizTalkMap Include="**\*.btm">
+      <Namespace>$(RootNamespace).$([System.String]::Copy(&quot;%(RelativeDir)&quot;).TrimEnd('\').Replace('\','.'))</Namespace>
+      <TypeName>$([System.String]::Copy(&quot;%(Filename)&quot;).Replace('.','_'))</TypeName>
+    </BizTalkMap>
+    <!-- Excel Environment Settings inclusion glob -->
+    <ExcelEnvironmentSettingFiles Include="**\*.Settings.xml">
+      <Namespace>$(RootNamespace).$([System.String]::Copy(&quot;%(RelativeDir)&quot;).TrimEnd('\').Replace('\','.'))</Namespace>
+      <TypeName>$([System.String]::Copy(&quot;%(Filename)&quot;).Replace('.',''))</TypeName>
+    </ExcelEnvironmentSettingFiles>
+    <!-- XML Schemas default inclusion glob -->
+    <XmlSchema Include="**\*.xsd" Exclude="**\*Properties.xsd">
+      <Namespace>$(RootNamespace).$([System.String]::Copy(&quot;%(RelativeDir)&quot;).TrimEnd('\').Replace('\','.'))</Namespace>
+      <TypeName>$([System.String]::Copy(&quot;%(Filename)&quot;).Replace('.','_'))</TypeName>
+    </XmlSchema>
+    <!-- XML Property Schemas default inclusion glob -->
+    <XmlSchema Include="**\*Properties.xsd">
+      <Namespace>$(RootNamespace).$([System.String]::Copy(&quot;%(RelativeDir)&quot;).Replace('\','.'))$([System.Text.RegularExpressions.Regex]::Replace($([System.String]::Copy(&quot;%(Filename)&quot;)) , 'Properties$', ''))</Namespace>
+      <TypeName>Properties</TypeName>
+    </XmlSchema>
+  </ItemGroup>
+
+  <Target Name="CustomBeforeBuild" BeforeTargets="BeforeBuild" DependsOnTargets="$(CustomBeforeBuildDependsOn)" />
+
+  <Target Name="ResolveReferencedAssemblies" DependsOnTargets="ResolveProjectReferences;ResolveAssemblyReferences">
+    <ItemGroup>
+      <ReferencedAssembly Include="@(_ResolveAssemblyReferenceResolvedFiles)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="RemoveGeneratedBizTalkCSharpItemsFromCompileItemGroup">
+    <!--
+      Default inclusion glob, see https://docs.microsoft.com/en-us/dotnet/core/tools/csproj#default-compilation-includes-in-net-core-projects,
+      would only include BizTalk.Factory Transpiler generated items provided they already exist on disk; which is definitely not the case for
+      a freshly cloned repo. To circumvent this, these items will therefore be included on the basis of the output items produced by the
+      BizTalk.Factory Transpiler tasks.
+      However, these items could linger on disk from a previous build and therefore be included by the default inclusion glob too, which would
+      produce duplicate warning messages during the build. To circumvent this, we therefore make sure that all of the items that are produced
+      by the BizTalk.Factory Transpiler tasks are removed from the item groups produced by the default inclusion glob, so as to guarantee that
+      only the ones produced by the BizTalk.Factory Transpiler tasks are present in these item groups.
+      -->
+    <ItemGroup>
+      <Compile Remove="**\*.btm.cs" />
+      <Compile Remove="**\*.btp.cs" />
+      <Compile Remove="**\*OrchestrationBinding.Designer.cs" />
+      <Compile Remove="**\*.xsd.cs" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="ResolveReferencedBizTalkAssemblies" DependsOnTargets="ResolveReferencedAssemblies">
+    <ResolveBizTalkAssembly
+      ReferencedAssemblies="@(ReferencedAssembly)"
+      Condition=" '@(ReferencedAssembly)' != '' " >
+      <Output ItemName="ResolvedReferencedBizTalkAssembly" TaskParameter="BizTalkAssemblies" />
+    </ResolveBizTalkAssembly>
+  </Target>
+
+  <Target Name="ResolveReferencedBizTalkPipelineDefinitionAssemblies" DependsOnTargets="ResolveReferencedAssemblies">
+    <ItemGroup>
+      <BizTalkPipelineDefinitionAssembly Include="@(_ResolvedProjectReferencePaths)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="ResolveLinkedExcelEnvironmentSettingFiles">
+    <ItemGroup>
+      <__LinkedItems Include="@(Content->HasMetadata('Link'));@(None->HasMetadata('Link'))" />
+      <__LinkedExcelEnvironmentSettingFiles Include="@(__LinkedItems)"
+        Condition="$([System.Text.RegularExpressions.Regex]::IsMatch(%(Link), '(?i:\.Settings\.xml)$'))">
+        <Namespace>$(RootNamespace).$([System.IO.Path]::GetDirectoryName(%(Link)).TrimEnd('\').Replace('\','.'))</Namespace>
+        <TypeName>$([System.String]::Copy(&quot;%(Filename)&quot;).Replace('.',''))</TypeName>
+      </__LinkedExcelEnvironmentSettingFiles>
+      <ExcelEnvironmentSettingFiles Include="@(__LinkedExcelEnvironmentSettingFiles)" />
+      <__LinkedExcelEnvironmentSettingFiles Remove="@(__LinkedExcelEnvironmentSettingFiles)" />
+      <__LinkedItems Remove="@(__LinkedItems)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="GenerateCSharpEnvironmentSettingItems" DependsOnTargets="ResolveLinkedExcelEnvironmentSettingFiles">
+    <!-- TODO incremental build wrt. inputs/outputs -->
+    <Message Text="Generating C# environment setting classes..." Importance="High" Condition=" '@(ExcelEnvironmentSettingFiles)' != '' " />
+    <GenerateCSharpEnvironmentSettings
+      ExcelEnvironmentSettings="@(ExcelEnvironmentSettingFiles)"
+      Condition=" '@(ExcelEnvironmentSettingFiles)' != '' ">
+      <Output ItemName="GeneratedCSharpEnvironmentSettingItem" TaskParameter="CSharpEnvironmentSettings" />
+    </GenerateCSharpEnvironmentSettings>
+ </Target>
+
+  <Target Name="GenerateCSharpMapItems" DependsOnTargets="ResolveReferencedAssemblies">
+    <!-- TODO incremental build wrt. inputs/outputs ; Inputs="@(BizTalkMap)" Outputs="@(BizTalkMap -> '%(FullPath).cs')" -->
+    <Message Text="BizTalk Compiler is compiling maps..." Importance="High" Condition=" '@(BizTalkMap)' != '' " />
+    <GenerateCSharpMap
+      BizTalkMaps="@(BizTalkMap)"
+      ProjectReferences="@(ReferencePath)"
+      RootNamespace="$(RootNamespace)"
+      WarningLevel="$(WarningLevel)"
+      Condition=" '@(BizTalkMap)' != '' ">
+      <Output ItemName="GeneratedCSharpMapItem" TaskParameter="CSharpMaps" />
+    </GenerateCSharpMap>
+    <ItemGroup>
+      <Compile Include="@(GeneratedCSharpMapItem)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="GenerateCSharpOrchestrationBindingItems" DependsOnTargets="ResolveReferencedBizTalkAssemblies">
+    <!-- TODO incremental build wrt. inputs/outputs -->
+    <Message Text="BizTalk.Factory is generating C# orchestration binding files..." Importance="High" Condition=" '@(ResolvedReferencedBizTalkAssembly)' != '' " />
+    <GenerateCSharpOrchestrationBinding
+      OrchestrationAssemblies="@(ResolvedReferencedBizTalkAssembly)"
+      ReferencedAssemblies="@(ReferencedAssembly)"
+      RootNamespace="$(RootNamespace)"
+      RootPath="$(MSBuildProjectDirectory)"
+      Condition=" '@(ResolvedReferencedBizTalkAssembly)' != '' ">
+      <Output ItemName="GeneratedCSharpOrchestrationBindingItem" TaskParameter="CSharpOrchestrationBindings" />
+    </GenerateCSharpOrchestrationBinding>
+    <ItemGroup>
+      <Compile Include="@(GeneratedCSharpOrchestrationBindingItem)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="GenerateCSharpPipelineItems" DependsOnTargets="ResolveReferencedBizTalkPipelineDefinitionAssemblies">
+    <!-- TODO incremental build wrt. inputs/outputs -->
+    <Message Text="BizTalk.Factory Pipeline Definition Transpiler is generating C# files..." Importance="High" Condition=" '@(BizTalkPipelineDefinitionAssembly)' != '' " />
+    <GenerateCSharpPipeline
+      PipelineDefinitionAssemblies="@(BizTalkPipelineDefinitionAssembly)"
+      ReferencedAssemblies="@(ReferencedAssembly)"
+      RootNamespace="$(RootNamespace)"
+      RootPath="$(MSBuildProjectDirectory)"
+      Condition=" '@(BizTalkPipelineDefinitionAssembly)' != '' ">
+      <Output ItemName="GeneratedCSharpPipelineItem" TaskParameter="CSharpPipelines" />
+    </GenerateCSharpPipeline>
+    <ItemGroup>
+      <Compile Include="@(GeneratedCSharpPipelineItem)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="GenerateDesignerPipelineItems" DependsOnTargets="ResolveReferencedBizTalkPipelineDefinitionAssemblies">
+    <!-- TODO incremental build wrt. inputs/outputs -->
+    <Message Text="BizTalk.Factory Pipeline Definition Transpiler is generating designer files..." Importance="High" Condition=" '@(BizTalkPipelineDefinitionAssembly)' != '' " />
+    <GenerateDesignerPipeline
+      PipelineDefinitionAssemblies="@(BizTalkPipelineDefinitionAssembly)"
+      ReferencedAssemblies="@(ReferencedAssembly)"
+      RootNamespace="$(RootNamespace)"
+      RootPath="$(MSBuildProjectDirectory)"
+      Condition=" '@(BizTalkPipelineDefinitionAssembly)' != '' ">
+      <Output ItemName="GeneratedDesignerPipelineItem" TaskParameter="DesignerPipelines" />
+    </GenerateDesignerPipeline>
+  </Target>
+
+  <Target Name="GenerateCSharpSchemaItems"  DependsOnTargets="ResolveReferencedAssemblies">
+    <!-- TODO incremental build wrt. inputs/outputs ; Inputs="@(XmlSchema)" Outputs="@(XmlSchema -> '%(FullPath).cs')" -->
+    <Message Text="BizTalk Compiler is compiling schemas..." Importance="High" Condition=" '@(XmlSchema)' != '' " />
+    <GenerateCSharpSchema
+      XmlSchemas="@(XmlSchema)"
+      ProjectReferences="@(ReferencePath)"
+      RootNamespace="$(RootNamespace)"
+      WarningLevel="$(WarningLevel)"
+      Condition=" '@(XmlSchema)' != '' ">
+      <Output ItemName="GeneratedCSharpSchemaItem" TaskParameter="CSharpSchemas" />
+    </GenerateCSharpSchema>
+    <ItemGroup>
+      <Compile Include="@(GeneratedCSharpSchemaItem)" />
+    </ItemGroup>
+  </Target>
+
+</Project>

@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.Build.NoTargets/2.0.1">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <OutputPath>tasks</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/icraftsoftware/Be.Stateless.BizTalk.Build.Tasks</RepositoryUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <NuspecFile>BizTalk.Server.2020.Build.nuspec</NuspecFile>
+    <NuspecProperties>version=$(FileVersion)</NuspecProperties>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Abstractions" Version="2.0.21033.24183" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.0.21033.28391" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.21033.24586" />
+    <PackageReference Include="BizTalk.Server.2020.Utilities" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Build" Version="16.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="log4net" Version="2.*" ExcludeAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Be.Stateless.BizTalk.Build.Tasks\Be.Stateless.BizTalk.Build.Tasks.csproj" />
+  </ItemGroup>
+</Project>

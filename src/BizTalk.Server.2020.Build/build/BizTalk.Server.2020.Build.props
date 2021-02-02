@@ -1,0 +1,12 @@
+<Project TreatAsLocalProperty="BizTalkFactoryBuildTaskAssembly">
+  <PropertyGroup>
+    <BizTalkFactoryBuildTaskAssembly>$(MSBuildThisFileDirectory)..\tasks\net48\Be.Stateless.BizTalk.Build.Tasks.dll</BizTalkFactoryBuildTaskAssembly>
+  </PropertyGroup>
+  <UsingTask TaskName="GenerateCSharpEnvironmentSettings" AssemblyFile="$(BizTalkFactoryBuildTaskAssembly)" />
+  <UsingTask TaskName="GenerateCSharpMap" AssemblyFile="$(BizTalkFactoryBuildTaskAssembly)" />
+  <UsingTask TaskName="GenerateCSharpOrchestrationBinding" AssemblyFile="$(BizTalkFactoryBuildTaskAssembly)" />
+  <UsingTask TaskName="GenerateCSharpPipeline" AssemblyFile="$(BizTalkFactoryBuildTaskAssembly)" />
+  <UsingTask TaskName="GenerateCSharpSchema" AssemblyFile="$(BizTalkFactoryBuildTaskAssembly)" />
+  <UsingTask TaskName="GenerateDesignerPipeline" AssemblyFile="$(BizTalkFactoryBuildTaskAssembly)" />
+  <UsingTask TaskName="ResolveBizTalkAssembly" AssemblyFile="$(BizTalkFactoryBuildTaskAssembly)" />
+</Project>

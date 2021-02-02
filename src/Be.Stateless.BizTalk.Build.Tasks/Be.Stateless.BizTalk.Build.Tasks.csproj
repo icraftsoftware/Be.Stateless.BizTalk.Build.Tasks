@@ -25,11 +25,6 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DocumentationFile>bin\Release\$(AssemblyName).xml</DocumentationFile>
-    <NoWarn>1701;1702</NoWarn>
-  </PropertyGroup>
-
   <ItemGroup>
     <None Include="..\..\.settings\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
