@@ -8,3 +8,5 @@ BizTalk Factory's MSBuild tasks for general purpose BizTalk Server development.
 ## NuGet Packages
 
 [![NuGet Version](https://img.shields.io/nuget/v/Be.Stateless.BizTalk.Build.Tasks.svg?label=Be.Stateless.BizTalk.Build.Tasks&style=flat)](https://www.nuget.org/packages/Be.Stateless.BizTalk.Build.Tasks/)
+
+[![NuGet Version](https://img.shields.io/nuget/v/BizTalk.Server.2020.Build.svg?label=BizTalk.Server.2020.Build&style=flat)](https://www.nuget.org/packages/BizTalk.Server.2020.Build/)

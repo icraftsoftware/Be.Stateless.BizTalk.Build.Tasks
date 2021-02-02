@@ -12,10 +12,14 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <!-- https://natemcmaster.com/blog/2017/11/11/build-tools-in-nuget/ -->
+    <!-- https://natemcmaster.com/blog/2017/07/05/msbuild-task-in-nuget/ -->
     <IsPackable>true</IsPackable>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <NuspecFile>BizTalk.Server.2020.Build.nuspec</NuspecFile>
-    <NuspecProperties>version=$(FileVersion)</NuspecProperties>
+    <NuspecProperties>version=$(PackageVersion)</NuspecProperties>
   </PropertyGroup>
 
   <ItemGroup>
