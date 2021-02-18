@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using Moq;
 using Xunit;
-using static Be.Stateless.Unit.DelegateFactory;
+using static FluentAssertions.FluentActions;
 
 namespace Be.Stateless.BizTalk.Build.Tasks
 {
@@ -60,7 +60,7 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 				RootPath = @"C:\Project",
 				BuildEngine = new Mock<IBuildEngine>().Object
 			};
-			Action(() => sut.Transpile())
+			Invoking(() => sut.Transpile())
 				.Should().Throw<InvalidOperationException>()
 				.WithMessage(@"'C:\Project\Orchestrations\Bound\Process.Designer.cs' output task item has been defined multiple times.");
 		}
