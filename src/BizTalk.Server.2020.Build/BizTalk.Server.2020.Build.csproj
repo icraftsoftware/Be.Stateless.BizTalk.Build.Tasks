@@ -24,9 +24,9 @@
 
   <ItemGroup>
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Abstractions" Version="2.0.21105.29865" />
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.0.21105.30665" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.0.21119.27072" />
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.21105.30286" />
-    <PackageReference Include="BizTalk.Server.2020.Utilities" Version="1.0.0" />
+    <PackageReference Include="BizTalk.Server.2020.Utilities" Version="1.0.1" />
     <PackageReference Include="Microsoft.Build" Version="16.9.0" />
   </ItemGroup>
 
