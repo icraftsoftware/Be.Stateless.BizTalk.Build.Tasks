@@ -53,8 +53,7 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 
 		protected abstract string OutputFileExtension { get; }
 
-		protected HashSet<ITaskItem> OutputTaskItems { get; } =
-			new HashSet<ITaskItem>(new LambdaComparer<ITaskItem>((lti, rti) => lti.ItemSpec.Equals(rti.ItemSpec, StringComparison.InvariantCultureIgnoreCase)));
+		protected HashSet<ITaskItem> OutputTaskItems { get; } = new(new LambdaComparer<ITaskItem>((lti, rti) => lti.ItemSpec.Equals(rti.ItemSpec, StringComparison.InvariantCultureIgnoreCase)));
 
 		internal void Transpile()
 		{
