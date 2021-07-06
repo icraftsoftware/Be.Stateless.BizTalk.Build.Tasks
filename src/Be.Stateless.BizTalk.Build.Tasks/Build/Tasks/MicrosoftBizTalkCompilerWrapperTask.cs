@@ -75,10 +75,13 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 		{
 			try
 			{
-				var buildSnapshot = new BuildSnapshot(ProjectReferences.Select(projectReference => projectReference.GetMetadata("FullPath")).ToList(), FilesToCompile);
-				buildSnapshot.ProjectConfigProperties[DictionaryTags.EnableUnitTesting] = false;
-				buildSnapshot.ProjectConfigProperties[DictionaryTags.TreatWarningsAsErrors] = false;
-				buildSnapshot.ProjectConfigProperties[DictionaryTags.WarningLevel] = WarningLevel;
+				var buildSnapshot = new BuildSnapshot(ProjectReferences.Select(projectReference => projectReference.GetMetadata("FullPath")).ToList(), FilesToCompile) {
+					ProjectConfigProperties = {
+						[DictionaryTags.EnableUnitTesting] = false,
+						[DictionaryTags.TreatWarningsAsErrors] = false,
+						[DictionaryTags.WarningLevel] = WarningLevel
+					}
+				};
 				return Compile(buildSnapshot);
 			}
 			catch (Exception exception)

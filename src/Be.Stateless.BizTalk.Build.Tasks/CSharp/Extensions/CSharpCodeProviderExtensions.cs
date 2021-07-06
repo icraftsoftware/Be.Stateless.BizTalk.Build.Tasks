@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 
 using System;
 using System.CodeDom;
-using System.CodeDom.Compiler;
 using System.IO;
 using Be.Stateless.Extensions;
 using Microsoft.CSharp;
@@ -36,10 +35,7 @@ namespace Be.Stateless.BizTalk.CSharp.Extensions
 			Directory.CreateDirectory(Path.GetDirectoryName(path)!);
 			using (var writer = new StreamWriter(path))
 			{
-				codeProvider.GenerateCodeFromCompileUnit(
-					codeCompileUnit,
-					writer,
-					new CodeGeneratorOptions { BracingStyle = "C", IndentString = "\t", VerbatimOrder = true });
+				codeProvider.GenerateCodeFromCompileUnit(codeCompileUnit, writer, new() { BracingStyle = "C", IndentString = "\t", VerbatimOrder = true });
 			}
 		}
 	}
