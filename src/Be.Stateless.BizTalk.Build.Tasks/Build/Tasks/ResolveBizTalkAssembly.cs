@@ -18,8 +18,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reflection;
 using Be.Stateless.BizTalk.Dsl.Binding.CodeDom;
+using Be.Stateless.BizTalk.Reflection;
 using Microsoft.Build.Framework;
 
 namespace Be.Stateless.BizTalk.Build.Tasks
@@ -32,7 +32,7 @@ namespace Be.Stateless.BizTalk.Build.Tasks
 		protected override void ExecuteCore()
 		{
 			BizTalkAssemblies = ReferencedAssemblies
-				.Where(a => Assembly.LoadFrom(a.GetMetadata("Identity")).IsBizTalkAssembly())
+				.Where(a => AssemblyLoader.Load(a.GetMetadata("Identity")).IsBizTalkAssembly())
 				.ToArray();
 		}
 
