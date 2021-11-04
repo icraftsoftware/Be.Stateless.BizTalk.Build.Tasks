@@ -24,17 +24,17 @@
 
   <ItemGroup>
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Abstractions" Version="2.0.21284.50613" />
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.0.21285.44387" />
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.21285.44011" />
-    <PackageReference Include="BizTalk.Server.2020.Utilities" Version="1.0.1">
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.0.21361.6491" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.21347.21495" />
+    <PackageReference Include="BizTalk.Server.2020.Utilities" Version="1.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Build" Version="16.11.0" />
+    <PackageReference Include="Microsoft.Build" Version="17.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="log4net" Version="2.*" ExcludeAssets="all" />
+    <PackageReference Include="log4net" Version="2.0.13" ExcludeAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
