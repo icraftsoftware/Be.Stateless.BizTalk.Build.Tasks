@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <RootNamespace>Be.Stateless.BizTalk</RootNamespace>
+    <AssemblyName>Be.Stateless.BizTalk.Build.Tasks</AssemblyName>
+    <Description>BizTalk Factory's MSBuild tasks for general purpose BizTalk Server development.</Description>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/icraftsoftware/Be.Stateless.BizTalk.Build.Tasks</RepositoryUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GeneratePackageOnBuild Condition=" '$(GeneratePackageOnBuild)' == '' ">false</GeneratePackageOnBuild>
+    <IsPackable>true</IsPackable>
+    <PackageId>$(AssemblyName)</PackageId>
+    <PackageDescription>$(Description)</PackageDescription>
+    <PackageProjectUrl>$(RepositoryUrl)</PackageProjectUrl>
+    <PackageTags>BizTalk build taks tools</PackageTags>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\.settings\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Abstractions" Version="2.1.22025.28826" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.1.22025.35897" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.1.22025.30333" />
+    <PackageReference Include="Be.Stateless.BizTalk.Explorer" Version="2.1.22025.23369" />
+    <PackageReference Include="Be.Stateless.Extensions" Version="2.1.22025.20499" />
+    <PackageReference Include="Be.Stateless.Reflection" Version="2.1.22025.20814" />
+    <PackageReference Include="BizTalk.Server.2020.Runtime" Version="1.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="BizTalk.Server.2020.Utilities" Version="1.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Build" Version="17.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Build.Framework" Version="17.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+  </ItemGroup>
+
+</Project>

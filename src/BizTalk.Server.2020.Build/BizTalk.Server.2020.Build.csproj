@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.Build.NoTargets/2.0.1">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <OutputPath>tasks</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/icraftsoftware/Be.Stateless.BizTalk.Build.Tasks</RepositoryUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- https://natemcmaster.com/blog/2017/11/11/build-tools-in-nuget/ -->
+    <!-- https://natemcmaster.com/blog/2017/07/05/msbuild-task-in-nuget/ -->
+    <IsPackable>true</IsPackable>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <NuspecFile>BizTalk.Server.2020.Build.nuspec</NuspecFile>
+    <NuspecProperties>version=$(PackageVersion)</NuspecProperties>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Abstractions" Version="2.1.22025.28826" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.1.22025.35897" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.1.22025.30333" />
+    <PackageReference Include="Be.Stateless.BizTalk.Explorer" Version="2.1.22025.23369" />
+    <PackageReference Include="Be.Stateless.Extensions" Version="2.1.22025.20499" />
+    <PackageReference Include="Be.Stateless.Reflection" Version="2.1.22025.20814" />
+    <PackageReference Include="BizTalk.Server.2020.Utilities" Version="1.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Build" Version="17.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="log4net" Version="2.0.14" ExcludeAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Be.Stateless.BizTalk.Build.Tasks\Be.Stateless.BizTalk.Build.Tasks.csproj" />
+  </ItemGroup>
+</Project>
