@@ -31,7 +31,7 @@
 
   <ItemGroup>
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Abstractions" Version="2.1.22025.28826" />
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.1.22025.35897" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.1.22038.33899" />
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.1.22025.30333" />
     <PackageReference Include="Be.Stateless.BizTalk.Explorer" Version="2.1.22025.23369" />
     <PackageReference Include="Be.Stateless.Extensions" Version="2.1.22025.20499" />
