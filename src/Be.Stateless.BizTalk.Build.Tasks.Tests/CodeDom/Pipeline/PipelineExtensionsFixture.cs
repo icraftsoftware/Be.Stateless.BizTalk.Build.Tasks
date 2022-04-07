@@ -25,6 +25,7 @@ using Be.Stateless.BizTalk.Component;
 using Be.Stateless.BizTalk.Dsl.Pipeline;
 using Be.Stateless.BizTalk.Dsl.Pipeline.Xml.Serialization;
 using Be.Stateless.BizTalk.Dummies;
+using Be.Stateless.BizTalk.Management;
 using Be.Stateless.IO.Extensions;
 using Be.Stateless.Resources;
 using FluentAssertions;
@@ -36,26 +37,30 @@ namespace Be.Stateless.BizTalk.CodeDom.Pipeline
 {
 	public class PipelineExtensionsFixture
 	{
-		[Theory]
+		[SkippableTheory]
 		[InlineData(typeof(FFReceive))]
 		[InlineData(typeof(PassThruReceive))]
 		[InlineData(typeof(XmlReceive))]
 		[InlineData(typeof(XmlRegularPipeline))]
 		public void ReceivePipelinesCompileToDynamicAssembly(Type pipelineType)
 		{
+			Skip.IfNot(BizTalkInstallation.IsInstalled);
+
 			var assembly = pipelineType.CompileToDynamicAssembly();
 			assembly.CreateInstance(pipelineType.FullName!)
 				.Should().NotBeNull()
 				.And.BeAssignableTo<Microsoft.BizTalk.PipelineOM.ReceivePipeline>();
 		}
 
-		[Theory]
+		[SkippableTheory]
 		[InlineData(typeof(FFTransmit))]
 		[InlineData(typeof(PassThruTransmit))]
 		[InlineData(typeof(XmlMicroPipeline))]
 		[InlineData(typeof(XmlTransmit))]
 		public void SendPipelinesCompileToDynamicAssembly(Type pipelineType)
 		{
+			Skip.IfNot(BizTalkInstallation.IsInstalled);
+
 			var assembly = pipelineType.CompileToDynamicAssembly();
 			assembly.CreateInstance(pipelineType.FullName!)
 				.Should().NotBeNull()
